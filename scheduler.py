@@ -37,17 +37,21 @@ def main():
             schedulers.append(scheduler)
 
     firstScheduler = schedulers[0]
-    print(firstScheduler.grid.rows)
-    print(firstScheduler.grid.cols)
-    for x in firstScheduler.rides:
-        x.printRide()
-        print(x.startTime)
-        print(x.endTime)
-        print(x.endTime)
+   # print(firstScheduler.grid.rows)
+   # print(firstScheduler.grid.cols)
+    #for x in firstScheduler.rides:
+        #x.printRide()
+    #    print(x.startTime)
+     #   print(x.endTime)
+      #  print(x.endTime)
 
-    print(firstScheduler.vehicles)
-    print(firstScheduler.bonus)
-    print(firstScheduler.steps)
+    #print(firstScheduler.vehicles)
+    #print(firstScheduler.bonus)
+    #print(firstScheduler.steps)
+    firstScheduler.schedule()
+    #firstScheduler.printSchedule()
+
+
 
 
 """

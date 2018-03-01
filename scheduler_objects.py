@@ -25,11 +25,12 @@ class Scheduler:
     def __init__(self, filedata):  #
         x = first_line(filedata)
 
-        self._grid = Grid(x[0],x[1])
-        self._vehicles= x[2]
-        self._rideamount = x[3]
-        self._bonus = x[4]
-        self._steps = x[5]
+        self._grid = Grid(int(x[0]),int(x[1]))
+        self._vehicles= int(x[2])
+        self.vehicle_list = [Vehicle() for _ in range(self._vehicles)]
+        self._rideamount = int(x[3])
+        self._bonus = int(x[4])
+        self._steps = int(x[5])
         self._rides = createRideObjs(filedata)
 
 
@@ -71,10 +72,44 @@ class Scheduler:
     steps = property(_getSteps, _setSteps)
 
 
+    @staticmethod
+    def dist(x0,y0,x1,y1):
+        return abs(x1-x0)+abs(y1-y0)
 
+    def find_optimal_car(self,ride):
+        opt_car = None
+        opt_val = float('inf')
+        ride_length = self.dist(ride.startRow,ride.startCol,ride.endRow,ride.endCol)
+        for car in self.vehicle_list:
+            pos1 = car.cur_pos
+            pos2 = ride.startRow,ride.startCol
+            if car.turn_num+self.dist(pos1[0],pos1[1],pos2[0],pos2[1])<ride.endTime-ride_length: #car can make it
+                if car.turn_num+self.dist(pos1[0],pos1[1],pos2[0],pos2[1])<ride.startTime:
+                    bonus=self._bonus
+                else:
+                    bonus =0
+                if car.turn_num+self.dist(pos1[0],pos1[1],pos2[0],pos2[1])-bonus < opt_val:
+                    opt_val = car.turn_num+self.dist(pos1[0],pos1[1],pos2[0],pos2[1])-bonus
+                    opt_car = car
+
+        return opt_car, car.turn_num+self.dist(pos1[0],pos1[1],pos2[0],pos2[1])
 
     def schedule(self):
-        print("scheduling")
+        self._rides = sorted(self._rides,key=lambda r:r.endTime)
+
+        for ride in self._rides:
+            ride_length = self.dist(ride.startRow, ride.startCol, ride.endRow, ride.endCol)
+            opt_car, arr_time = self.find_optimal_car(ride)
+            opt_car.rides.append(ride)
+            opt_car.cur_pos = (ride.endRow,ride.endCol)
+            opt_car.turn_num = max(arr_time,ride.startTime) + ride_length
+
+
+class Vehicle():
+    def __init__(self, cur_pos_x=0, cur_pos_y=0, turn_num=0):
+        self.cur_pos = cur_pos_x, cur_pos_y
+        self.turn_num = turn_num
+        self.rides = []
 
 
 class Grid:
@@ -108,16 +143,12 @@ class Ride:
     _startRow, _startCol, _endRow, _endCol, _start, _end = 0,0,0,0,0,0
 
     def __init__(self, startRow, startCol, endRow, endCol, start, end):
-        self._startRow = startRow
-        self._startCol =startCol
-        self._endRow =endRow
-        self._endCol =endCol
-        self._start = start
-        self._end = end
-
-
-    def printRide(self):
-        print("start Row : " + self.startRow + " start Col : "+ self.startCol + " end row : "+ self.endRow + " end Col : "+ self.endCol + " start time : "+ self.startTime + " end time : "+ self.endTime)
+        self._startRow = int(startRow)
+        self._startCol =int(startCol)
+        self._endRow =int(endRow)
+        self._endCol =int(endCol)
+        self._start = int(start)
+        self._end = int(end)
 
 
     def _getStartRow(self, session=None):
