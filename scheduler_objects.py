@@ -201,7 +201,3 @@ def createRideObjs(filedata):
 def doNothing():
     return
 
-
-
-if __name__ == "__main__":
-   main()
